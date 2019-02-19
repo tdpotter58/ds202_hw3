@@ -1,0 +1,79 @@
+---
+title: "Homework 3"
+author: "Tim Potter"
+date: "February 14, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+data(tips, package="reshape2")
+library(ggplot2)
+```
+
+# Questions
+
+1.
+```{r}
+numParty <- nrow(tips)
+numParty
+```
+
+2.
+```{r}
+class(tips$total_bill)
+class(tips$tip)
+class(tips$sex)
+class(tips$smoker)
+class(tips$day)
+class(tips$time)
+class(tips$size)
+```
+
+3.
+```{r}
+tips$day <- with(tips, relevel(day, "Thur"))
+day <- tips$day
+day
+
+```
+
+4.
+```{r}
+
+female5 <- tips[tips$sex == "Female",]
+female5 <- female5[female5$size >= 5,]
+female5
+```
+
+5.
+The amount tipped increases with the total amount of the bill. Generally, the tip does looks to be about 20% of the bill.There are, of course, outliers above and below that trend.One patron paid less than $10 and tipped more than $5, while another paid over $40 and tipped $2.50. This just means that some people tip differently than others.
+```{r}
+ggplot(data = tips, aes(x = total_bill, y = tip)) + geom_point()
+```
+
+6. 
+Average tip rate is about 16%
+```{r}
+tips$tiprate <- tips$tip / tips$total_bill
+tips
+mean(tips$tiprate)
+```
+
+7.
+```{r}
+tips$time <- with(tips, relevel(time, "Lunch"))
+ggplot(data = tips, aes(x = time, y = tiprate)) + geom_boxplot()
+```
+
+8.
+According to the linear regression lines added, non smokers tend to tip more as the bill increases, while smokers will tip less. The data also shows that the gender of the customer paying the bill doesn't have a major impact on the amount tipped.
+```{r}
+ggplot(data = tips, aes(x = total_bill, y = tip, color = smoker)) + geom_point() + geom_smooth(method = lm, se = FALSE)
+ggplot(data = tips, aes(x = total_bill, y = tip, color = sex)) + geom_point() + geom_smooth(method = lm, se = FALSE)
+```
+
+9.
+It would appear that on weekdays, the gender of the payee is split fairly evenly. The split of the gender is much more skewed to men when it gets to the weekend.
+```{r}
+ggplot(data = tips, aes(x = day, fill = sex)) + geom_bar( position = position_dodge())
